@@ -58,17 +58,4 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<ReadUsuarioDto> register(
-            @RequestBody @Valid CreateUsuarioDto dto,
-            UriComponentsBuilder uriBuilder) {
-        // For now, just alias the create method
-        return create(dto, uriBuilder);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<String> login() {
-        // Temporary implementation - will be replaced with JWT later
-        return ResponseEntity.ok("Login endpoint - authentication will be implemented later");
-    }
 }
