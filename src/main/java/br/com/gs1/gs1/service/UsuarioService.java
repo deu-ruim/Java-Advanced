@@ -1,5 +1,6 @@
 package br.com.gs1.gs1.service;
 
+import br.com.gs1.gs1.domain.enums.Role;
 import br.com.gs1.gs1.domain.usuario.*;
 import br.com.gs1.gs1.exception.DuplicateEntryException;
 import br.com.gs1.gs1.exception.NotFoundException;
@@ -34,6 +35,8 @@ public class UsuarioService {
         usuario.setEmail(dto.email());
         usuario.setUsername(dto.username());
         usuario.setPassword(passwordEncoder.encode(dto.password()));
+        usuario.setUf(dto.uf());
+        usuario.setRole(Role.USER);
 
         Usuario savedUsuario = usuarioRepository.save(usuario);
         return new ReadUsuarioDto(savedUsuario);

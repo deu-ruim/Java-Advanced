@@ -1,15 +1,19 @@
 package br.com.gs1.gs1.domain.usuario;
 
+import br.com.gs1.gs1.domain.enums.Role;
+import br.com.gs1.gs1.domain.enums.UF;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 @Getter
 @Setter
@@ -42,20 +46,18 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UF uf;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.USER;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList();
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
-
-//    @Override
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    @Override
-//    public String getUsername() {
-//        return username;
-//    }
 
     @Override
     public boolean isAccountNonExpired() {
