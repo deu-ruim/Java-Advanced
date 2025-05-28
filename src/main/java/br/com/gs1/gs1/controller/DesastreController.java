@@ -3,6 +3,8 @@ package br.com.gs1.gs1.controller;
 import br.com.gs1.gs1.domain.desastre.CreateDesastreDto;
 import br.com.gs1.gs1.domain.desastre.ReadDesastreDto;
 import br.com.gs1.gs1.domain.desastre.UpdateDesastreDto;
+import br.com.gs1.gs1.domain.enums.Severidade;
+import br.com.gs1.gs1.domain.enums.UF;
 import br.com.gs1.gs1.domain.usuario.CreateUsuarioDto;
 import br.com.gs1.gs1.domain.usuario.LoginDto;
 import br.com.gs1.gs1.domain.usuario.ReadUsuarioDto;
@@ -15,11 +17,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/desastres")
@@ -39,8 +43,11 @@ public class DesastreController {
 
     @GetMapping
     public ResponseEntity<Page<ReadDesastreDto>> findAll(
+            @RequestParam(required = false) UF uf,
+            @RequestParam(required = false) Severidade severidade,
+            @RequestParam(required = false) Long usuarioId,
             @PageableDefault(size = 10, sort = {"createdAt"}, direction = Sort.Direction.DESC) Pageable pageable) {
-        return ResponseEntity.ok(desastreService.findAll(pageable));
+        return ResponseEntity.ok(desastreService.findAllFiltered(uf, severidade, usuarioId, pageable));
     }
 
     @GetMapping("/{id}")

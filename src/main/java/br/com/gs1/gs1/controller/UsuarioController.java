@@ -1,5 +1,7 @@
 package br.com.gs1.gs1.controller;
 
+import br.com.gs1.gs1.domain.enums.Role;
+import br.com.gs1.gs1.domain.enums.UF;
 import br.com.gs1.gs1.domain.usuario.CreateUsuarioDto;
 import br.com.gs1.gs1.domain.usuario.LoginDto;
 import br.com.gs1.gs1.domain.usuario.ReadUsuarioDto;
@@ -34,9 +36,12 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<Page<ReadUsuarioDto>> findAll(
+            @RequestParam(required = false) UF uf,
+            @RequestParam(required = false) Role role,
+            @RequestParam(required = false) Boolean ativo,
             @PageableDefault(size = 10, sort = {"username"}) Pageable pageable) {
-        Page<ReadUsuarioDto> usuarios = usuarioService.findAll(pageable);
-        return ResponseEntity.ok(usuarios);
+
+        return ResponseEntity.ok(usuarioService.findAllFiltered(uf, role, ativo, pageable));
     }
 
     @GetMapping("/{id}")

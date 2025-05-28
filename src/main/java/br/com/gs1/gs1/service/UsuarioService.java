@@ -1,6 +1,7 @@
 package br.com.gs1.gs1.service;
 
 import br.com.gs1.gs1.domain.enums.Role;
+import br.com.gs1.gs1.domain.enums.UF;
 import br.com.gs1.gs1.domain.usuario.*;
 import br.com.gs1.gs1.exception.DuplicateEntryException;
 import br.com.gs1.gs1.exception.NotFoundException;
@@ -39,9 +40,18 @@ public class UsuarioService {
     }
 
 
-    public Page<ReadUsuarioDto> findAll(Pageable pageable) {
-        return usuarioRepository.findAll(pageable)
-                .map(ReadUsuarioDto::new);
+    public Page<ReadUsuarioDto> findAllFiltered(
+            UF uf,
+            Role role,
+            Boolean ativo,
+            Pageable pageable) {
+
+        return usuarioRepository.findAllFiltered(
+                uf,
+                role,
+                ativo,
+                pageable
+        ).map(ReadUsuarioDto::new);
     }
 
     public ReadUsuarioDto findById(Long id) {

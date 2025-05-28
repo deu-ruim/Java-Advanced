@@ -1,6 +1,8 @@
 package br.com.gs1.gs1.service;
 
 import br.com.gs1.gs1.domain.desastre.*;
+import br.com.gs1.gs1.domain.enums.Severidade;
+import br.com.gs1.gs1.domain.enums.UF;
 import br.com.gs1.gs1.domain.usuario.Usuario;
 import br.com.gs1.gs1.domain.usuario.UsuarioRepository;
 import br.com.gs1.gs1.exception.NotFoundException;
@@ -10,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -35,9 +39,18 @@ public class DesastreService {
         return new ReadDesastreDto(desastreRepository.save(desastre));
     }
 
-    public Page<ReadDesastreDto> findAll(Pageable pageable) {
-        return desastreRepository.findAll(pageable)
-                .map(ReadDesastreDto::new);
+    public Page<ReadDesastreDto> findAllFiltered(
+            UF uf,
+            Severidade severidade,
+            Long usuarioId,
+            Pageable pageable) {
+
+        return desastreRepository.findAllFiltered(
+                uf,
+                severidade,
+                usuarioId,
+                pageable
+        ).map(ReadDesastreDto::new);
     }
 
     public ReadDesastreDto findById(Long id) {
