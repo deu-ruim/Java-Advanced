@@ -27,16 +27,12 @@ public class UsuarioService {
             throw new DuplicateEntryException("Email already in use");
         }
 
-        if (usuarioRepository.existsByUsername(dto.username())) {
-            throw new DuplicateEntryException("Username already taken");
-        }
-
         Usuario usuario = new Usuario();
         usuario.setEmail(dto.email());
         usuario.setUsername(dto.username());
         usuario.setPassword(passwordEncoder.encode(dto.password()));
         usuario.setUf(dto.uf());
-        usuario.setRole(Role.USER);
+        usuario.setAtivo(dto.ativo() != null ? dto.ativo() : true);
 
         Usuario savedUsuario = usuarioRepository.save(usuario);
         return new ReadUsuarioDto(savedUsuario);
@@ -59,28 +55,39 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        if (dto.email() != null && !dto.email().equals(usuario.getEmail())) {
-            if (usuarioRepository.existsByEmail(dto.email())) {
-                throw new DuplicateEntryException("Email already in use");
+        if (dto.email() != null && !dto.email().isBlank() && !dto.email().equals(usuario.getEmail())) {
+            if (usuarioRepository.existsByEmailAndIdNot(dto.email(), id)) {
+                throw new DuplicateEntryException("Email already in use by another user");
             }
             usuario.setEmail(dto.email());
         }
 
-        if (dto.username() != null && !dto.username().equals(usuario.getUsername())) {
-            if (usuarioRepository.existsByUsername(dto.username())) {
-                throw new DuplicateEntryException("Username already taken");
+        if (dto.username() != null && !dto.username().isBlank() && !dto.username().equals(usuario.getUsername())) {
+            if (usuarioRepository.existsByUsernameAndIdNot(dto.username(), id)) {
+                throw new DuplicateEntryException("Username already taken by another user");
             }
             usuario.setUsername(dto.username());
         }
 
-        if (dto.password() != null) {
+        if (dto.password() != null && !dto.password().isBlank()) {
             usuario.setPassword(passwordEncoder.encode(dto.password()));
+        }
+
+        if (dto.uf() != null) {
+            usuario.setUf(dto.uf());
+        }
+
+        if (dto.ativo() != null) {
+            usuario.setAtivo(dto.ativo());
+        }
+
+        if (dto.role() != null && !dto.role().equals(usuario.getRole())) {
+            usuario.setRole(dto.role());
         }
 
         Usuario updatedUsuario = usuarioRepository.save(usuario);
         return new ReadUsuarioDto(updatedUsuario);
     }
-
 
     @Transactional
     public void delete(Long id) {
@@ -88,5 +95,11 @@ public class UsuarioService {
             throw new NotFoundException("User not found");
         }
         usuarioRepository.deleteById(id);
+    }
+
+    public boolean validateCredentials(String email, String password) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return passwordEncoder.matches(password, usuario.getPassword());
     }
 }

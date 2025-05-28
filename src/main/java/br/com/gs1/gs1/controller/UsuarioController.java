@@ -1,6 +1,7 @@
 package br.com.gs1.gs1.controller;
 
 import br.com.gs1.gs1.domain.usuario.CreateUsuarioDto;
+import br.com.gs1.gs1.domain.usuario.LoginDto;
 import br.com.gs1.gs1.domain.usuario.ReadUsuarioDto;
 import br.com.gs1.gs1.domain.usuario.UpdateUsuarioDto;
 import br.com.gs1.gs1.service.UsuarioService;
@@ -56,6 +57,19 @@ public class UsuarioController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         usuarioService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ReadUsuarioDto> register(
+            @RequestBody @Valid CreateUsuarioDto dto,
+            UriComponentsBuilder uriBuilder) {
+        return create(dto, uriBuilder);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Void> login(@RequestBody LoginDto request) {
+        boolean valid = usuarioService.validateCredentials(request.email(), request.password());
+        return valid ? ResponseEntity.ok().build() : ResponseEntity.status(401).build();
     }
 
 }

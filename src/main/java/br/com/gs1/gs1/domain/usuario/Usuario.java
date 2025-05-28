@@ -25,7 +25,7 @@ import java.util.List;
                 @UniqueConstraint(columnNames = "email"),
                 @UniqueConstraint(columnNames = "username")
         })
-public class Usuario implements UserDetails {
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,28 +54,7 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private Role role = Role.USER;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
-    }
+    @Column(nullable = false)
+    private Boolean ativo = true;
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
 }

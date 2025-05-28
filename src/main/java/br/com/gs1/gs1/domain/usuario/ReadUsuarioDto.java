@@ -11,7 +11,8 @@ public record ReadUsuarioDto(
         String email,
         String username,
         UF uf,
-        Role role
+        Role role,
+        Boolean ativo
 ) {
     public ReadUsuarioDto(Usuario usuario) {
         this(
@@ -19,7 +20,8 @@ public record ReadUsuarioDto(
                 usuario.getEmail(),
                 usuario.getUsername(),
                 usuario.getUf(),
-                usuario.getRole()
+                usuario.getRole(),
+                usuario.getAtivo()
         );
     }
 }
