@@ -7,6 +7,7 @@ import br.com.gs1.gs1.exception.DuplicateEntryException;
 import br.com.gs1.gs1.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.AuthenticationException;
@@ -59,6 +60,7 @@ public class UsuarioService {
         ).map(ReadUsuarioDto::new);
     }
 
+    @Cacheable(value = "usuarios", key = "#id")
     public ReadUsuarioDto findById(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));

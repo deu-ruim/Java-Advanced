@@ -15,7 +15,12 @@ public class CacheConfig {
 
     @Bean
     public CacheManager cacheManager() {
-        CaffeineCacheManager cacheManager = new CaffeineCacheManager();
+        CaffeineCacheManager cacheManager = new CaffeineCacheManager(
+                "modelos",
+                "modelo",
+                "desastre",
+                "desastres"
+        );
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(20, TimeUnit.MINUTES)  // Cache expires 30 minutes after write
                 .maximumSize(1000)                    // Maximum 1000 entries in cache
