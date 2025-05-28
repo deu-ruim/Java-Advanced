@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,10 @@ public class UsuarioService {
         if (usuarioRepository.existsByEmail(dto.email())) {
             throw new DuplicateEntryException("Email already in use");
         }
+        if (usuarioRepository.existsByUsername(dto.username())) {
+            throw new DuplicateEntryException("Username already in use");
+        }
+
 
         Usuario usuario = new Usuario();
         usuario.setEmail(dto.email());
@@ -56,14 +61,14 @@ public class UsuarioService {
 
     public ReadUsuarioDto findById(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return new ReadUsuarioDto(usuario);
     }
 
     @Transactional
     public ReadUsuarioDto update(Long id, UpdateUsuarioDto dto) {
         Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         if (dto.email() != null && !dto.email().isBlank() && !dto.email().equals(usuario.getEmail())) {
             if (usuarioRepository.existsByEmailAndIdNot(dto.email(), id)) {
@@ -102,14 +107,20 @@ public class UsuarioService {
     @Transactional
     public void delete(Long id) {
         if (!usuarioRepository.existsById(id)) {
-            throw new NotFoundException("User not found");
+            throw new NotFoundException("User not found with id: " + id);
         }
         usuarioRepository.deleteById(id);
     }
 
     public boolean validateCredentials(String email, String password) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AuthenticationException("Email or Password Invalid.") {
+                });
+
+        if (!usuario.getAtivo()) {
+            throw new IllegalStateException("User account is inactive");
+        }
+
         return passwordEncoder.matches(password, usuario.getPassword());
     }
 }

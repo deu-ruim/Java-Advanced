@@ -7,9 +7,22 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CreateDesastreDto(
-        @NotNull UF uf,
-        @NotBlank @Size(max = 100) String titulo,
-        @NotBlank @Size(max = 1000) String descricao,
-        @NotNull Severidade severidade,
-        @NotNull Long usuarioId
-) {}
+        @NotNull(message = "State (UF) is required")
+        UF uf,
+
+        @NotBlank(message = "Title is required")
+        @Size(max = 100, message = "Title cannot exceed 100 characters")
+        String titulo,
+
+        @NotBlank(message = "Description is required")
+        @Size(max = 1000, message = "Description cannot exceed 1000 characters")
+        String descricao,
+
+        @NotNull(message = "Severity level is required")
+        Severidade severidade,
+
+        @NotNull(message = "User ID is required")
+        Long usuarioId
+) {
+
+}

@@ -1,7 +1,8 @@
-- ADD Params for common routes;
 - Email API (trigger by getting a disaster, looking up all users connected to it, getting their email, and sending the disaster info;
-- Error Handling
+- Cleanup Update Methods;
+- Move creates into DTOs;
 
+- Add Cache;
 - Configure Swagger;
 - Sprinkle some security;
 - Deploy (?);

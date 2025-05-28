@@ -56,13 +56,13 @@ public class DesastreService {
     public ReadDesastreDto findById(Long id) {
         return desastreRepository.findById(id)
                 .map(ReadDesastreDto::new)
-                .orElseThrow(() -> new NotFoundException("Disaster not found"));
+                .orElseThrow(() -> new NotFoundException("Disaster not found with id: " + id));
     }
 
     @Transactional
     public ReadDesastreDto update(Long id, UpdateDesastreDto dto) {
         Desastre desastre = desastreRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Disaster not found"));
+                .orElseThrow(() -> new NotFoundException("Disaster not found with id: " + id));
 
         if (dto.uf() != null) desastre.setUf(dto.uf());
         if (dto.titulo() != null) desastre.setTitulo(dto.titulo());
