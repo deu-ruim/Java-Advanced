@@ -3,14 +3,16 @@ package br.com.gs1.gs1.service;
 import br.com.gs1.gs1.domain.enums.Role;
 import br.com.gs1.gs1.domain.enums.UF;
 import br.com.gs1.gs1.domain.usuario.*;
+import br.com.gs1.gs1.exception.AuthenticationException;
 import br.com.gs1.gs1.exception.DuplicateEntryException;
 import br.com.gs1.gs1.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,8 @@ public class UsuarioService {
     @Autowired
     private  PasswordEncoder passwordEncoder;
 
+
+    @CacheEvict(value = "usuarios", key = "#result.id", condition = "#result != null")
     @Transactional
     public ReadUsuarioDto create(CreateUsuarioDto dto) {
         if (usuarioRepository.existsByEmail(dto.email())) {
@@ -60,13 +64,17 @@ public class UsuarioService {
         ).map(ReadUsuarioDto::new);
     }
 
-    @Cacheable(value = "usuarios", key = "#id")
+    @Cacheable(value = "usuario", key = "#id")
     public ReadUsuarioDto findById(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
         return new ReadUsuarioDto(usuario);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "usuarios", key = "#id"),
+            @CacheEvict(value = "usuarios", key = "#result.email", condition = "#result != null")
+    })
     @Transactional
     public ReadUsuarioDto update(Long id, UpdateUsuarioDto dto) {
         Usuario usuario = usuarioRepository.findById(id)
@@ -106,6 +114,7 @@ public class UsuarioService {
         return new ReadUsuarioDto(updatedUsuario);
     }
 
+    @CacheEvict(value = "usuarios", key = "#id")
     @Transactional
     public void delete(Long id) {
         if (!usuarioRepository.existsById(id)) {
@@ -116,13 +125,19 @@ public class UsuarioService {
 
     public boolean validateCredentials(String email, String password) {
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new AuthenticationException("Email or Password Invalid.") {
+                .orElseThrow(() -> new NotFoundException("User with email "+ email + " not found.") {
                 });
 
         if (!usuario.getAtivo()) {
             throw new IllegalStateException("User account is inactive");
         }
 
-        return passwordEncoder.matches(password, usuario.getPassword());
+        boolean valid =  passwordEncoder.matches(password, usuario.getPassword());
+        if (!valid) throw new AuthenticationException("Password incorrect");
+        return valid;
+    }
+
+    @CacheEvict(value = {"usuario", "usuarios"}, allEntries = true)
+    public void clearCache() {
     }
 }

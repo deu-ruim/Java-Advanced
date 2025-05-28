@@ -1,5 +1,4 @@
-- Add Cache;
-- Configure Swagger;
+
 - Sprinkle some security;
 - Deploy (?);
 

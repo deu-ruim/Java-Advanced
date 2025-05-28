@@ -8,6 +8,9 @@ import br.com.gs1.gs1.domain.usuario.UsuarioRepository;
 import br.com.gs1.gs1.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class DesastreService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+
+    @CacheEvict(value = "desastres", allEntries = true)
     @Transactional
     public ReadDesastreDto create(CreateDesastreDto dto) {
         Usuario usuario = usuarioRepository.findById(dto.usuarioId())
@@ -39,6 +44,7 @@ public class DesastreService {
         return new ReadDesastreDto(desastreRepository.save(desastre));
     }
 
+    @Cacheable(value = "desastres", key = "{#uf?.name(), #severidade?.name()}")
     public Page<ReadDesastreDto> findAllFiltered(
             UF uf,
             Severidade severidade,
@@ -53,12 +59,17 @@ public class DesastreService {
         ).map(ReadDesastreDto::new);
     }
 
+    @Cacheable(value = "desastre", key = "#id")
     public ReadDesastreDto findById(Long id) {
         return desastreRepository.findById(id)
                 .map(ReadDesastreDto::new)
                 .orElseThrow(() -> new NotFoundException("Disaster not found with id: " + id));
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = "desastres", key = "#id"),
+            @CacheEvict(value = "desastres", allEntries = true)
+    })
     @Transactional
     public ReadDesastreDto update(Long id, UpdateDesastreDto dto) {
         Desastre desastre = desastreRepository.findById(id)
@@ -72,8 +83,13 @@ public class DesastreService {
         return new ReadDesastreDto(desastreRepository.save(desastre));
     }
 
+    @CacheEvict(value = "desastres", key = "#id")
     @Transactional
     public void delete(Long id) {
         desastreRepository.deleteById(id);
+    }
+
+    @CacheEvict(value = {"desastre", "desastres"}, allEntries = true)
+    public void clearCache() {
     }
 }
