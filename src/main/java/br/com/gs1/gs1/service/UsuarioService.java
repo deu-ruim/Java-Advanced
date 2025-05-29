@@ -6,6 +6,7 @@ import br.com.gs1.gs1.domain.usuario.*;
 import br.com.gs1.gs1.exception.AuthenticationException;
 import br.com.gs1.gs1.exception.DuplicateEntryException;
 import br.com.gs1.gs1.exception.NotFoundException;
+import br.com.gs1.gs1.infra.security.TokenResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -13,6 +14,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +30,13 @@ public class UsuarioService {
     @Autowired
     private  PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
+    @Autowired TokenService tokenService;
+
+
+//    CREATE
     @CacheEvict(value = "usuarios", key = "#result.id", condition = "#result != null")
     @Transactional
     public ReadUsuarioDto create(CreateUsuarioDto dto) {
@@ -49,7 +59,7 @@ public class UsuarioService {
         return new ReadUsuarioDto(savedUsuario);
     }
 
-
+// FIND ALL FILTERED
     public Page<ReadUsuarioDto> findAllFiltered(
             UF uf,
             Role role,
@@ -63,7 +73,7 @@ public class UsuarioService {
                 pageable
         ).map(ReadUsuarioDto::new);
     }
-
+//  FIND BY ID
     @Cacheable(value = "usuario", key = "#id")
     public ReadUsuarioDto findById(Long id) {
         Usuario usuario = usuarioRepository.findById(id)
@@ -71,6 +81,7 @@ public class UsuarioService {
         return new ReadUsuarioDto(usuario);
     }
 
+//    UPDATE
     @Caching(evict = {
             @CacheEvict(value = "usuarios", key = "#id"),
             @CacheEvict(value = "usuarios", key = "#result.email", condition = "#result != null")
@@ -114,6 +125,7 @@ public class UsuarioService {
         return new ReadUsuarioDto(updatedUsuario);
     }
 
+//    DELETE
     @CacheEvict(value = "usuarios", key = "#id")
     @Transactional
     public void delete(Long id) {
@@ -123,6 +135,7 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
     }
 
+//    VALIDATE (MOCK/LEGACY)
     public boolean validateCredentials(String email, String password) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User with email "+ email + " not found.") {
@@ -137,6 +150,21 @@ public class UsuarioService {
         return valid;
     }
 
+//    LOGIN (REAL AUTH)
+    public ResponseEntity<TokenResponse> loginUser(LoginDto request) {
+        try {
+            var authToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
+            var authentication = authenticationManager.authenticate(authToken);
+
+            var usuario = (Usuario) authentication.getPrincipal();
+            var token = tokenService.generateToken(usuario);
+
+            return ResponseEntity.ok(new TokenResponse(token));
+        } catch (org.springframework.security.core.AuthenticationException e) {
+            throw new br.com.gs1.gs1.exception.AuthenticationException("Invalid email or password");
+        }
+    }
+//  CLEAR-CACHE
     @CacheEvict(value = {"usuario", "usuarios"}, allEntries = true)
     public void clearCache() {
     }

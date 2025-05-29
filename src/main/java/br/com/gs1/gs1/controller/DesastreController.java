@@ -31,6 +31,7 @@ public class DesastreController {
     @Autowired
     private DesastreService desastreService;
 
+    // POST
     @Operation(summary = "Cadastrar novo desastre")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Desastre criado com sucesso"),
@@ -50,6 +51,7 @@ public class DesastreController {
         return ResponseEntity.created(uri).body(desastre);
     }
 
+    // GET
     @Operation(
             summary = "Listar desastres",
             description = "Retorna desastres paginados com filtros opcionais"
@@ -71,6 +73,7 @@ public class DesastreController {
         return ResponseEntity.ok(desastreService.findAllFiltered(uf, severidade, usuarioId, pageable));
     }
 
+    // GETByID
     @Operation(summary = "Buscar desastre por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Desastre encontrado"),
@@ -83,6 +86,7 @@ public class DesastreController {
         return ResponseEntity.ok(desastreService.findById(id));
     }
 
+    // PUT
     @Operation(summary = "Atualizar desastre existente")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Desastre atualizado"),
@@ -103,6 +107,7 @@ public class DesastreController {
         return ResponseEntity.ok(desastreService.update(id, dto));
     }
 
+    // DELETE
     @Operation(summary = "Excluir desastre")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Desastre excluído"),
@@ -116,6 +121,7 @@ public class DesastreController {
         return ResponseEntity.noContent().build();
     }
 
+    // CLEAR-CACHE
     @Operation(summary = "Limpar cache de Desastres")
     @ApiResponse(responseCode = "204", description = "Cache limpo")
     @PostMapping("/clear-cache")

@@ -28,6 +28,7 @@ public class DesastreService {
     private UsuarioRepository usuarioRepository;
 
 
+//    CREATE
     @CacheEvict(value = "desastres", allEntries = true)
     @Transactional
     public ReadDesastreDto create(CreateDesastreDto dto) {
@@ -43,7 +44,7 @@ public class DesastreService {
 
         return new ReadDesastreDto(desastreRepository.save(desastre));
     }
-
+//  FIND ALL FILTERED
     @Cacheable(value = "desastres", key = "{#uf?.name(), #severidade?.name()}")
     public Page<ReadDesastreDto> findAllFiltered(
             UF uf,
@@ -59,13 +60,14 @@ public class DesastreService {
         ).map(ReadDesastreDto::new);
     }
 
+//    FINDByID
     @Cacheable(value = "desastre", key = "#id")
     public ReadDesastreDto findById(Long id) {
         return desastreRepository.findById(id)
                 .map(ReadDesastreDto::new)
                 .orElseThrow(() -> new NotFoundException("Disaster not found with id: " + id));
     }
-
+//    UPDATE
     @Caching(evict = {
             @CacheEvict(value = "desastres", key = "#id"),
             @CacheEvict(value = "desastres", allEntries = true)
@@ -82,7 +84,7 @@ public class DesastreService {
 
         return new ReadDesastreDto(desastreRepository.save(desastre));
     }
-
+//  DELETE
     @CacheEvict(value = "desastres", key = "#id")
     @Transactional
     public void delete(Long id) {

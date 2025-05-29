@@ -19,6 +19,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -32,13 +33,15 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
+
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private TokenService tokenService;
 
-    @Operation(summary = "Cadastrar novo usuário")
+//    LEGACY POST
+    @Operation(summary = "(LEGACY ROUTE) Cadastrar novo usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos"),
@@ -57,6 +60,7 @@ public class UsuarioController {
         return ResponseEntity.created(uri).body(usuario);
     }
 
+//    GET
     @Operation(
             summary = "Listar usuários",
             description = "Retorna usuários paginados com filtros opcionais"
@@ -78,6 +82,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.findAllFiltered(uf, role, ativo, pageable));
     }
 
+//    GETByID
     @Operation(summary = "Buscar usuário por ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuário encontrado"),
@@ -91,6 +96,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
+//      PUT
     @Operation(summary = "Atualizar usuário existente")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Usuário atualizado"),
@@ -112,6 +118,7 @@ public class UsuarioController {
         return ResponseEntity.ok(updatedUsuario);
     }
 
+//      DELETE
     @Operation(summary = "Excluir usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Usuário excluído"),
@@ -125,6 +132,7 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 
+//      REGISTER
     @Operation(summary = "Registrar novo usuário (alias para POST /api/usuarios)")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso"),
@@ -142,7 +150,8 @@ public class UsuarioController {
         return create(dto, uriBuilder);
     }
 
-    @Operation(summary = "(SIMULAÇÃO) Login de usuário")
+//    LEGACY LOGIN
+    @Operation(summary = "(SIMULAÇÃO/LEGACY) Login de usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
@@ -157,7 +166,7 @@ public class UsuarioController {
         boolean valid = usuarioService.validateCredentials(request.email(), request.password());
         return valid ? ResponseEntity.ok().build() : ResponseEntity.status(401).build();
     }
-
+//      LOGIN
     @Operation(summary = "Login de usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
@@ -170,16 +179,9 @@ public class UsuarioController {
                     required = true
             )
             @RequestBody @Valid LoginDto request) {
-
-        var authToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
-        var authentication = authenticationManager.authenticate(authToken);
-
-        var usuario = (Usuario) authentication.getPrincipal();
-        var token = tokenService.generateToken(usuario);
-
-        return ResponseEntity.ok(new TokenResponse(token));
+                return usuarioService.loginUser(request);
     }
-
+//      CLEAR-CACHE
     @Operation(summary = "Limpar cache de Usuários")
     @ApiResponse(responseCode = "204", description = "Cache limpo")
     @PostMapping("/clear-cache")
