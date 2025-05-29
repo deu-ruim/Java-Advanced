@@ -1,6 +1,5 @@
 
-- Sprinkle some security;
-- Deploy (?);
+- Error Handling for /login
 
 - Make README.md;
 - Record Video;

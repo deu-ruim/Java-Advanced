@@ -84,6 +84,8 @@ BEGIN
 END;
 /
 
+update usuarios set role = 'ADMIN' where id = 20;
+
 desc usuarios;
 desc desastres;
 select * from usuarios;

@@ -2,10 +2,9 @@ package br.com.gs1.gs1.controller;
 
 import br.com.gs1.gs1.domain.enums.Role;
 import br.com.gs1.gs1.domain.enums.UF;
-import br.com.gs1.gs1.domain.usuario.CreateUsuarioDto;
-import br.com.gs1.gs1.domain.usuario.LoginDto;
-import br.com.gs1.gs1.domain.usuario.ReadUsuarioDto;
-import br.com.gs1.gs1.domain.usuario.UpdateUsuarioDto;
+import br.com.gs1.gs1.domain.usuario.*;
+import br.com.gs1.gs1.infra.security.TokenResponse;
+import br.com.gs1.gs1.service.TokenService;
 import br.com.gs1.gs1.service.UsuarioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -30,6 +31,12 @@ public class UsuarioController {
 
     @Autowired
     private UsuarioService usuarioService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Operation(summary = "Cadastrar novo usuário")
     @ApiResponses({
@@ -135,13 +142,13 @@ public class UsuarioController {
         return create(dto, uriBuilder);
     }
 
-    @Operation(summary = "Login de usuário")
+    @Operation(summary = "(SIMULAÇÃO) Login de usuário")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
     })
-    @PostMapping("/login")
-    public ResponseEntity<Void> login(
+    @PostMapping("/mocklogin")
+    public ResponseEntity<Void> mockLogin(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Credenciais de login",
                     required = true
@@ -149,6 +156,28 @@ public class UsuarioController {
             @RequestBody LoginDto request) {
         boolean valid = usuarioService.validateCredentials(request.email(), request.password());
         return valid ? ResponseEntity.ok().build() : ResponseEntity.status(401).build();
+    }
+
+    @Operation(summary = "Login de usuário")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login bem-sucedido"),
+            @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
+    })
+    @PostMapping("/login")
+    public ResponseEntity<TokenResponse> login(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Credenciais de login",
+                    required = true
+            )
+            @RequestBody @Valid LoginDto request) {
+
+        var authToken = new UsernamePasswordAuthenticationToken(request.email(), request.password());
+        var authentication = authenticationManager.authenticate(authToken);
+
+        var usuario = (Usuario) authentication.getPrincipal();
+        var token = tokenService.generateToken(usuario);
+
+        return ResponseEntity.ok(new TokenResponse(token));
     }
 
     @Operation(summary = "Limpar cache de Usuários")
