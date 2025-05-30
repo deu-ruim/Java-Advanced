@@ -2,6 +2,10 @@
 
 # DeuRuim
 
+## Link do Vídeo:
+
+https://youtu.be/L2SNeI2-ZwM
+
 ## Instruções de Execução
 
 1. Clonar o projeto.
