@@ -47,7 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/usuarios/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE,"/api/usuarios/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/desastres").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/desastres/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/desastres").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/desastres/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/desastres/**").hasRole("ADMIN")

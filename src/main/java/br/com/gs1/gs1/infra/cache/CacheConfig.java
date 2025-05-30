@@ -22,7 +22,7 @@ public class CacheConfig {
                 "desastres"
         );
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(20, TimeUnit.MINUTES)  // Cache expires 20 minutes after write
+                .expireAfterWrite(3, TimeUnit.MINUTES)  // Cache expires 3 minutes after write
                 .maximumSize(1000)                    // Maximum 1000 entries in cache
                 .recordStats());                      // Enable cache statistics
         return cacheManager;

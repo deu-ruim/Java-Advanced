@@ -84,10 +84,12 @@ BEGIN
 END;
 /
 
-update usuarios set role = 'ADMIN' where id = 20;
+update usuarios set role = 'ADMIN' where id = 23;
 
 desc usuarios;
 desc desastres;
 select * from usuarios;
 select * from desastres;
 commit;
+
+
