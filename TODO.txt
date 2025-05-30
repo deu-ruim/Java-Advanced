@@ -1,1 +1,5 @@
 - Record Video;
+
+- SELECT * FROM V$SESSION where username = 'RM554833';
+
+desc V$SESSION;

@@ -19,7 +19,7 @@ public class OpenApiConfig {
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
                                         .bearerFormat("JWT")))
-                .info(new Info().title("GS1 API").version("v1").description("API Backend for the 2025 Global Solution 1 Project - ADS FIAP"))
+                .info(new Info().title("DeuRuim API").version("v1").description("API Backend for the 2025 Global Solution 1 Project - ADS FIAP"))
                 .addSecurityItem(new SecurityRequirement().addList("bearer-key"));
     }
 }
