@@ -45,20 +45,20 @@ public class DesastreService {
         return new ReadDesastreDto(desastreRepository.save(desastre));
     }
 //  FIND ALL FILTERED
-    @Cacheable(value = "desastres", key = "{#uf?.name(), #severidade?.name()}")
-    public Page<ReadDesastreDto> findAllFiltered(
-            UF uf,
-            Severidade severidade,
-            Long usuarioId,
-            Pageable pageable) {
+@Cacheable(value = "desastres", key = "{#uf?.name(), #severidade?.name(), #usuarioId}")
+public Page<ReadDesastreDto> findAllFiltered(
+        UF uf,
+        Severidade severidade,
+        Long usuarioId,
+        Pageable pageable) {
 
-        return desastreRepository.findAllFiltered(
-                uf,
-                severidade,
-                usuarioId,
-                pageable
-        ).map(ReadDesastreDto::new);
-    }
+    return desastreRepository.findAllFiltered(
+            uf,
+            severidade,
+            usuarioId,
+            pageable
+    ).map(ReadDesastreDto::new);
+}
 
 //    FINDByID
     @Cacheable(value = "desastre", key = "#id")
