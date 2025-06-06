@@ -20,7 +20,7 @@ https://youtu.be/L2SNeI2-ZwM
 
 ## IMPORTANTE:
 
-Se ao executar o projeto, o IntelliJ cuspir o erro "java: cannot find symbol", vá em File -> Settings (atalho CTRL + ALT + S) -> Build, Execution, Deployment -> Compiler -> Annotation Processors -> Selecione "sensorium" - > Marque a opção "Obtain processors from project classpath" ao invés de "Processor path:"
+Se ao executar o projeto, o IntelliJ cuspir o erro "java: cannot find symbol", vá em File -> Settings (atalho CTRL + ALT + S) -> Build, Execution, Deployment -> Compiler -> Annotation Processors -> Selecione "gs1" - > Marque a opção "Obtain processors from project classpath" ao invés de "Processor path:"
 
 ## Integrantes
 
