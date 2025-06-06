@@ -2,9 +2,13 @@
 
 # DeuRuim
 
-## Link do Vídeo:
+## Link do Vídeo Explicativo:
 
 https://youtu.be/L2SNeI2-ZwM
+
+## Link do Pitch:
+
+https://youtu.be/55PfbdS
 
 ## Instruções de Execução
 
