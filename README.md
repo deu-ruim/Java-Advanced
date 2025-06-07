@@ -10,6 +10,10 @@ https://youtu.be/L2SNeI2-ZwM
 
 https://youtu.be/55PfbdS
 
+## Link do Deploy em Nuvem:
+
+http://191.235.234.135:8080/swagger-ui/index.html
+
 ## Instruções de Execução
 
 1. Clonar o projeto.
