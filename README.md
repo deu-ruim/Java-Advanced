@@ -12,7 +12,7 @@ https://youtu.be/55PfbdS
 
 ## Link do Deploy em Nuvem:
 
-http://191.235.234.135:8080/swagger-ui/index.html
+http://191.234.213.151:8080/swagger-ui/index.html
 
 ## Instruções de Execução
 
