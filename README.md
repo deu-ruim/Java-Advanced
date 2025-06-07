@@ -8,7 +8,7 @@ https://youtu.be/L2SNeI2-ZwM
 
 ## Link do Pitch:
 
-https://youtu.be/55PfbdS
+https://youtu.be/55PfbdSWxNo?si=QYtacM-vdKux6S3t
 
 ## Link do Deploy em Nuvem:
 
