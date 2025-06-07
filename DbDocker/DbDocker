@@ -1,0 +1,9 @@
+FROM postgres:16-alpine
+
+ENV POSTGRES_USER=admin
+ENV POSTGRES_PASSWORD=gsDeuRuim
+ENV POSTGRES_DB=dbDeuRuim
+
+COPY GlobalSchema.sql /docker-entrypoint-initdb.d/
+
+EXPOSE 5432

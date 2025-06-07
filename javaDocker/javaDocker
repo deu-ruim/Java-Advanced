@@ -1,0 +1,27 @@
+FROM maven:3.9.3-eclipse-temurin-17 AS builder
+
+RUN apt-get update && apt-get install -y git
+
+WORKDIR /app
+
+RUN git clone https://github.com/deu-ruim/Java-Advanced.git .
+
+RUN mvn clean package -DskipTests
+
+FROM openjdk:17-jdk-slim
+
+RUN groupadd -r erickgs && useradd -r -g erickgs erickgs
+
+WORKDIR /app
+
+ARG JAR_FILE=gs1-0.0.1-SNAPSHOT.jar
+
+COPY --from=builder /app/target/${JAR_FILE} /app/app.jar
+
+EXPOSE 8080
+
+RUN chown -R erickgs:erickgs /app
+
+USER erickgs
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
