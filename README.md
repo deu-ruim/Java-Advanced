@@ -66,4 +66,4 @@ Os arquivos para a entrega estão dentro da pasta chamada **Devops**
 
 ## Informações para execução 
 
-Caso for necessario executar o projeto Java, ou ver ele funcionando em tempo real, basta olhar a parte de cima do Readme chamada **Instruções de Execução**
+Caso for necessario executar o projeto Java, ou ver ele funcionando em tempo real, basta olhar a parte de cima do Readme chamada **Instruções de Execução** ou ver direto por http://74.163.240.166:8080
